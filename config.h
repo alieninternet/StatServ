@@ -6,9 +6,6 @@
 #ifndef __CONFIG_H_
 # define __CONFIG_H_
 
-// Debugging?
-# define DEBUG
-
 // Are users allowed to tell us to ignore them?
 # define IGNORE_ALLOWED
 
@@ -52,8 +49,8 @@
 # define CONNECT_PASSWORD		"secretword"
 
 // Timing stuff (times are in seconds)
-# define PING_TIME			120
-# define TIMEOUT			300
+# define PING_TIME			600
+# define TIMEOUT			60
 # define RECONNECT_DELAY		30
 # define CHECKPOINT_TIME		300
 //# define CHECKPOINT_TIME		1800
@@ -63,7 +60,13 @@
 //# define BURST_CLONE_TEST		50
 //# define BURST_CLONE_PREFIX		"Clone-"
 //# define BURST_CLONE_MODES		"+d"
-//# define BURST_CLONE_CHAN_PREFIX	"#CloneChan-" // enable channel joins
-//# define BURST_CLONE_FAT_CHAN		"#Clones" // one fat channel!
-	
+//# define BURST_CLONE_CHAN_PREFIX	"#CloneChan-"
+//# define BURST_CLONE_FAT_CHAN		"#Clones"
+
+// Debugging?
+# define DEBUG
+
+// Debugging the protocol? Protocol will be output via stderr
+# define DEBUG_PROTOCOL
+
 #endif

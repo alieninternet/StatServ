@@ -34,6 +34,7 @@ class Parser {
    static void PARSER_FUNC(parseNICK);
    static void PARSER_FUNC(parseNOTICE);
    static void PARSER_FUNC(parsePING);
+   static void PARSER_FUNC(parsePONG);
    static void PARSER_FUNC(parsePRIVMSG);
    static void PARSER_FUNC(parseQUIT);
    static void PARSER_FUNC(parseSERVER);

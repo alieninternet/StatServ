@@ -19,6 +19,7 @@ struct Parser::functionTableStruct const Parser::functionTable[] = {
      { "N",			parseNICK },
      { "NO",			parseNOTICE },
      { "PING",			parsePING },
+     { "PONG",			parsePONG },
      { "P",			parsePRIVMSG },
      { "Q",			parseQUIT },
      { "S",			parseSERVER },
@@ -31,6 +32,10 @@ struct Parser::functionTableStruct const Parser::functionTable[] = {
  */
 void Parser::parseLine(String &line)
 {
+#ifdef DEBUG_PROTOCOL
+   cerr << line << endl;
+#endif
+   
    // Break the line apart using the string tokeniser
    StringTokens st(line);
    String origin = "";
@@ -143,14 +148,24 @@ void PARSER_FUNC(Parser::parseNOTICE)
 }
 
 
-/* parsePING - Handle an PING message
+/* parsePING - Handle the remote server pinging us
  * Original 18/02/2002 simonb
  */
 void PARSER_FUNC(Parser::parsePING)
 {
-   // Just reply.. no fuss!
+   // Just reply.. no fuss! P13 doesn't really let other servers ping..
    String data = tokens.rest();
    Sender::sendPONG(data);
+}
+ 
+
+/* parsePONG - Handle the remote server replying to our ping
+ * Original 19/02/2002 simonb
+ */
+void PARSER_FUNC(Parser::parsePONG)
+{
+   // Pretty complex hey? :)
+   Daemon::gotPong();
 }
  
 
@@ -243,7 +258,7 @@ void PARSER_FUNC(Parser::parseQUIT)
  */
 void PARSER_FUNC(Parser::parseSERVER)
 {
-   if (!Daemon::inMainBurst()) {
+   if (!Daemon::inMainBurst() && !Daemon::inBurst(origin)) {
       // Add this server to the start-of-burst list
       String serverName = tokens.nextToken();
       Daemon::gotSOB(serverName);

@@ -1,7 +1,7 @@
 
 CXX=c++
 
-CXXFLAGS=-g -O0 -Wall
+CXXFLAGS=-O3 -Wall
 
 TARGET=versionserv
 
