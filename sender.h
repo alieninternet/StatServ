@@ -73,7 +73,8 @@ class Sender {
 	Daemon::queueAdd(String(":" MY_SERVERNAME " 351 ") + who +
 			 " :" VERSION);
      };
-   
+
+   static void sendWHOISreply(String const &);
    static void sendHelpReply(String const &);
    static void sendStatsReply(String const &);
 };

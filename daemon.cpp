@@ -73,6 +73,32 @@ void Daemon::init(void)
 
    ifstream file;
    String line = "";
+
+   // Load the version data file
+   file.open(FILE_VERSIONS);
+   
+   if (!file) {
+      cout << "Could not open " FILE_VERSIONS " for reading" << endl;
+   } else {
+      // Run through the file and read each line
+      while (!file.eof()) {
+	 file >> line;
+	 
+	 // Don't bother with the line if it is blank or has a # at the start
+	 if (line.length() && (line[0] != '#')) {
+	    // Break the line up
+	    StringTokens st(line);
+	    long count = st.nextToken().toLong();
+	    
+	    // Make sure that integer conversion worked (or it is not 0)
+	    if (!count) {
+	       continue;
+	    }
+	    
+	    versions[st.rest()] = count;
+	 }
+      }
+   }
    
    // Load the ignore list data
    file.open(FILE_IGNORES);

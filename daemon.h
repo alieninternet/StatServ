@@ -22,7 +22,7 @@
 
 class Daemon {
  private:
-   typedef map <String, unsigned long> versions_map_t;
+   typedef map <String, long> versions_map_t;
    typedef set <String> ignore_set_t;
    
    static int sock;				// Our connection socket
@@ -225,6 +225,11 @@ class Daemon {
    static int getUniqueVersions(void)
      {
 	return versions.size();
+     };
+
+   static time_t getStartTime(void)
+     {
+	return startTime;
      };
    
    static time_t getUptime(void)

@@ -45,7 +45,7 @@
 # define MY_SERVERNAME	"version.mothership.alien.intranet"
 # define MY_SERVERDESC	"Client Version Tester"
 # define MY_USERNICK	"Statistics"
-# define MY_USERDESC	"Version Statistics Collector: \002/msg Statistics help\002"
+# define MY_USERDESC	"Statistics Collector: \002/msg " MY_USERNICK " help\002"
 # define MY_USERMODES	"+dkRi"
 # define MY_USERNAME	"Statistics"
 # define MY_USERHOST	"stats.intranet"
@@ -62,9 +62,7 @@
 # define PING_TIME			300
 # define TIMEOUT			600
 # define RECONNECT_DELAY		30
-# define CHECKPOINT_TIME		300
-//# define CHECKPOINT_TIME		1800
-//# define CHECKPOINT_TIME		43200
+# define CHECKPOINT_TIME		3600
 
 // Built-in bursting test by way of clones (uncomment to enable)
 //# define BURST_CLONE_TEST		50

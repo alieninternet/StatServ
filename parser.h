@@ -40,6 +40,7 @@ class Parser {
    static void PARSER_FUNC(parseSERVER);
    static void PARSER_FUNC(parseSQUIT);
    static void PARSER_FUNC(parseVERSION);
+   static void PARSER_FUNC(parseWHOIS);
 };
 
 #endif

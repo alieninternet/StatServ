@@ -147,7 +147,7 @@ void Sender::sendMOTDreply(String const &who)
 {
    // Send the header
    Daemon::queueAdd(String(":" MY_SERVERNAME " 375 ") + who +
-		    " :- " MY_SERVERNAME " Server Message of the Day.");
+		    " :- " MY_SERVERNAME " Server Message of the Day. -");
 
    // Loop and send the MOTD data
    for (Sender::textbuff_t::iterator it = motdData.begin(); 
@@ -159,6 +159,26 @@ void Sender::sendMOTDreply(String const &who)
    // Send the footer
    Daemon::queueAdd(String(":" MY_SERVERNAME " 376 ") + who +
 		    " :End of MOTD");
+}
+
+
+/* sendWHOISreply - Send out a reply to WHOIS
+ * Original 19/02/2002 simonb
+ */
+void Sender::sendWHOISreply(String const &who)
+{
+   Daemon::queueAdd(String(":" MY_SERVERNAME " 311 ") + who +
+		    " " MY_USERNICK " " MY_USERNAME " " MY_USERHOST " * :"
+		    MY_USERDESC);
+   Daemon::queueAdd(String(":" MY_SERVERNAME " 312 ") + who +
+		    " " MY_USERNICK " " MY_SERVERNAME " :" MY_SERVERDESC);
+   Daemon::queueAdd(String(":" MY_SERVERNAME " 317 ") + who +
+		    " " MY_USERNICK " " +
+		    String(Daemon::getUptime()) + " " + 
+		    String(Daemon::getStartTime()) +
+		    " :seconds idle, signon time");
+   Daemon::queueAdd(String(":" MY_SERVERNAME " 318 ") + who +
+		    " " MY_USERNICK " :End of WHOIS list");
 }
 
 
@@ -202,22 +222,23 @@ void Sender::sendStatsReply(String const &who)
 		    String(Daemon::getCountRx() / 1024) + "k, Tx: " +
 		    String(Daemon::getCountTx() / 1024) + "k");
    Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who + 
-		    " :                    Users online - " +
+		    " :                     Users online - " +
 		    String(Daemon::getCountUsers()));
    Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who + 
-		    " :                  Servers online - " +
+		    " :                   Servers online - " +
 		    String(Daemon::getCountServers()));
    Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who + 
-		    " :   User connections this session - " +
+		    " :    User connections this session - " +
 		    String(Daemon::getCountConnects()));
    Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who + 
-		    " :User disconnections this session - " +
+		    " : User disconnections this session - " +
 		    String(Daemon::getCountDisconnects()));
    Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who + 
-		    " :               Ignored nicknames - " +
+		    " :                Ignored nicknames - " +
 		    String(Daemon::getCountIgnores()));
    Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who +
-		    " :            CTCP VERSION Replies - " +
+		    " :CTCP VERSION Replies this session - " +
 		    String(Daemon::getCountVersions()) + " (" +
-		    String(Daemon::getUniqueVersions()) + " unique)");
+		    String(Daemon::getUniqueVersions()) + 
+		    " unique in memory)");
 }

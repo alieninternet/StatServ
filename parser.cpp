@@ -25,6 +25,7 @@ struct Parser::functionTableStruct const Parser::functionTable[] = {
      { "S",			parseSERVER },
      { "SQUIT",			parseSQUIT },
      { "VERSION",		parseVERSION },
+     { "WHOIS",			parseWHOIS },
      { 0 }
 };
 
@@ -296,4 +297,18 @@ void PARSER_FUNC(Parser::parseSQUIT)
 void PARSER_FUNC(Parser::parseVERSION)
 {
    Sender::sendVERSIONreply(origin);
+};
+
+
+/* parseWHOIS - Do a remote WHOIS for those people with not enough to do...
+ * Original 19/02/2002 simonb
+ */
+void PARSER_FUNC(Parser::parseWHOIS)
+{
+   // Grab the username and check if that message is really destined for us
+   if (tokens.nextToken().toLower() != String(MY_USERNICK).toLower()) {
+      return;
+   }
+
+   Sender::sendWHOISreply(origin);
 };
