@@ -10,36 +10,26 @@
 # define IGNORE_ALLOWED
 
 // Should we tell a client we got an unknown command, or be quiet?
-//# define ANNOYING_SILENT_TREATMENT
+# define ANNOYING_SILENT_TREATMENT
+
+// Should we have a reply for CTCP SEX? :)
+# define CTCP_SEX_REPLY		"Oh, but I have to wash my hair tonight"
 
 // Should we have the 'stats' command?
 # define STATS_COMMAND
 
 // Passphrase for the 'stats' command (comment to turn off the passphrase)
-//# define STATS_PASSPHRASE	"man, gimme those stats"
-
-// Version identification
-# define VERSION	"StatServ 0.1"
+//# define STATS_PASSPHRASE	"very secret pass-phrase"
 
 // NickOP identification, comment these out to disable
-# define NICKOP_NAME	"NickOP@austnet.org"
-# define NICKOP_PASSWD	"qwp87346im"
+//# define NICKOP_NAME	"NickOP@austnet.org"
+//# define NICKOP_PASSWD	"qwp87346im"
 
 // Various files we need
 # define FILE_MOTD	"motd.txt"
 # define FILE_HELP	"help.txt"
 # define FILE_IGNORES	"ignore.txt"
 # define FILE_VERSIONS	"versions.txt"
-
-// Various messages to throw at people
-# define MSG_IGNORE		"Your nickname is being ignored, " \
-   				"it will no longer be checked in the future."
-# define MSG_IGNORE_ON		"Your nickname is already being ignored."
-# define MSG_UNIGNORE		"Your nickname is no longer being ignored," \
-   				"your client will be checked in the future."
-# define MSG_UNIGNORE_ON	"Your nickname is not being ignored."
-# define MSG_UNKNOWN		"Unknown command - Please type " \
-   				"\002/msg Statistics help\002 for assistance"
 
 // Info about us
 # define MY_SERVERNAME	"version.mothership.alien.intranet"
@@ -57,6 +47,16 @@
 # define CONNECT_SERVERNAME		"mothership.alien.intranet"
 # define CONNECT_PORT			6667
 # define CONNECT_PASSWORD		"secretword"
+
+// Various messages to throw at people
+# define MSG_IGNORE		"Your nickname is being ignored, " \
+   				"it will no longer be checked in the future."
+# define MSG_IGNORE_ON		"Your nickname is already being ignored."
+# define MSG_UNIGNORE		"Your nickname is no longer being ignored," \
+   				"your client will be checked in the future."
+# define MSG_UNIGNORE_ON	"Your nickname is not being ignored."
+# define MSG_UNKNOWN		"Unknown command - Please type " \
+   				"\002/msg Statistics help\002 for assistance"
 
 // Timing stuff (times are in seconds)
 # define PING_TIME			300
@@ -89,21 +89,24 @@
 //# define WITH_SNMP
 
 // Are we running the SNMP portion as an agentx or as a master agent?
-# define SNMP_AS_AGENTX
-# define SNMP_AGENT_NAME		"statserv"
+//# define SNMP_AS_AGENTX
+//# define SNMP_AGENT_NAME		"statserv"
 //# define SNMP_MASTER_AGENT_PORT		161
 
 // Size of the malloc()/realloc() chunks for the socket input buffer
 # define BUFFER_CHUNK_SIZE		128
 
 // Debugging?
-# define DEBUG
+//# define DEBUG
 
 // Debugging the protocol? Protocol will be output via stderr
 //# define DEBUG_PROTOCOL
 
 // Allow the 'raw' command to work (should never be allowed in production!!)
 //# define ALLOW_RAW_COMMAND
+
+// Version identification
+# define VERSION	"StatServ 0.2"
 
 // Make sure we were configured properly
 #if (PING_TIME >= TIMEOUT)

@@ -1,7 +1,7 @@
 
 CXX=c++
 
-CXXFLAGS=-Wall -Wstrict-prototypes #-O3
+CXXFLAGS=-Wall -Wstrict-prototypes -O3
 
 TARGET=statserv
 

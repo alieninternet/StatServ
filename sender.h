@@ -32,6 +32,14 @@ class Sender {
 	Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who +
 			 " :\001PING " + data + "\001");
      };
+
+# ifdef CTCP_SEX_REPLY
+   static void sendCTCPsexReply(String const &who)
+     {
+	Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who +
+			 " :\001SEX " CTCP_SEX_REPLY "\001");
+     };
+# endif
    
    static void sendCTCPversion(String const &who)
      {

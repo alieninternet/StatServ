@@ -192,6 +192,11 @@ void PARSER_FUNC(Parser::parsePRIVMSG)
       } else if (CTCPcommand == "VERSION") {
 	 Sender::sendCTCPversionReply(origin);
 	 return;
+#ifdef CTCP_SEX_REPLY
+      } else if (CTCPcommand == "SEX") {
+	 Sender::sendCTCPsexReply(origin);
+	 return;
+#endif
 #ifdef DEBUG
       } else {
 	 cout << "CTCP(P) " << origin << '>' << message << endl;
