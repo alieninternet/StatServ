@@ -11,15 +11,15 @@ AIS-IRC-STATSERV DEFINITIONS ::= BEGIN
 -- We need to include some stuff from other MIBs.
 --
 IMPORTS
-	MODULE-IDENTITY, enterprises
+	MODULE-IDENTITY, OBJECT-TYPE, enterprises
 		FROM SNMPv2-SMI;
 
 
 --
--- Begin the evolution module with the first definition
+-- Begin the StatServ module with the first definition
 --
 statserv	MODULE-IDENTITY
-		LAST-UPDATED	"200202212255Z"
+		LAST-UPDATED	"200202221114Z"
 		ORGANIZATION	"Alien Internet Services"
 		CONTACT-INFO	"        Simon Butcher
 				         Alien Internet Services
