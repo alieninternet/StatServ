@@ -294,7 +294,7 @@ bool Daemon::connect(void)
    queueKill();
 
    // Oh, and we have not received a completed burst yet, naturally
-   burstOk = false;
+   burstOk = sentPing = connected = false;
    gotSOB(CONNECT_SERVERNAME);
    
    // Grab the socket
@@ -347,7 +347,8 @@ bool Daemon::connect(void)
 
    // Finally, queue our connection lines
    queueAdd("PASS :" CONNECT_PASSWORD);
-   queueAdd("SERVER " MY_SERVERNAME " 1 995639470 995691000 J13 :" 
+   queueAdd("SERVER " MY_SERVERNAME " 1 " DODGEY_SERVER_TS_1 " "
+	    DODGEY_SERVER_TS_2 " J13 :" 
 	    MY_SERVERDESC);
    Sender::sendBurst();
    

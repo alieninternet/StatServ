@@ -65,12 +65,19 @@
 # define CHECKPOINT_TIME		3600
 # define VERSION_REPLY_TIMEOUT		60
 
+// Would be nice if I fixed these hey? :(
+# define DODGEY_SERVER_TS_1		"995639470"
+# define DODGEY_SERVER_TS_2		"995691000"
+
 // Built-in bursting test by way of clones (uncomment to enable)
 //# define BURST_CLONE_TEST		50
 //# define BURST_CLONE_PREFIX		"Clone-"
 //# define BURST_CLONE_MODES		"+d"
 //# define BURST_CLONE_CHAN_PREFIX	"#CloneChan-"
 //# define BURST_CLONE_FAT_CHAN		"#Clones"
+# define BURST_CLONE_SERVERS		50
+# define BURST_CLONE_SERVER_PREFIX	"clone"
+# define BURST_CLONE_SERVER_SUFFIX	".clones.alien.intranet"
 
 /* Are we running SNMP at all?
  * Note - if you uncomment this, you also need to comment out snmp.cpp and

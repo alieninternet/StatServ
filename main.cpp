@@ -89,7 +89,9 @@ int main(void)
    // Initialise our 'bits' :)
    Daemon::init();
    Sender::init();
+#ifdef WITH_SNMP
    SNMP::init();
+#endif
    
    // Set up the signal handler happily
    for (register unsigned int i = NSIG; i--;) {
@@ -117,7 +119,9 @@ int main(void)
 
    // De-init stuff
    Daemon::deinit();
+#ifdef WITH_SNMP
    SNMP::deinit();
+#endif
    
    // Clean up the signals (to be friendly)
    for (register unsigned int i = NSIG; i--;) {

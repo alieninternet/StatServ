@@ -1,0 +1,33 @@
+select: Invalid argument
+PASS :secretword
+SERVER mothership.alien.intranet 1 995562372 995691000 J13 :Mothership test server
+:mothership.alien.intranet S irc.riss.intranet 2 0 1014937681 P13 :[172.16.200.8] Cows Fly
+:mothership.alien.intranet S phoenix.dev.austnet.org 2 0 1014937682 P13 :[172.16.0.30] Dev server
+:phoenix.dev.austnet.org S phoenix.phoenix.intranet 3 0 1014314442 P13 :[172.16.20.3] Devel sever
+:mothership.alien.intranet S screw.u.guys.i.am.going.home.suck.titties.p13.suks.oo.intranet 2 0 1014951065 P13 :[172.16.0.20] IHateUKenny
+:irc.riss.intranet S services.org 3 0 1015025977 P13 :[172.16.200.8] Prototype C++ Services
+:mothership.alien.intranet N pickle 1 1014888713 pickle simonb.alien.intranet vw-27238.alien.intranet mothership.alien.intranet +viwhog 0 016912556 :* * * * *
+:pickle J #chaty
+:phoenix.dev.austnet.org N idle 2 1014067087 phoenix stargate.phoenix.intranet vw-3682.phoenix.intranet phoenix.dev.austnet.org +viwhr 2 4262727852 :* I'm to lame to read BitchX.doc *
+:idle J #fuckyouriss,#chaty
+:phoenix.dev.austnet.org N phoenix 2 996177092 phoenix phoenix.phoenix.intranet vw-11495.phoenix.intranet phoenix.dev.austnet.org +viwhogr 0 051646636 :Karl
+:phoenix J #chaty
+:irc.riss.intranet N riss 2 1015013856 riss james.riss.intranet vw-11584.riss.intranet irc.riss.intranet +viwho 0 348655788 :Hi.
+:riss J #debug,#chaty
+:services.org N Chan 3 1015025977 service services.org services.org services.org +k 0 000000001 :Channel Management
+:Chan J #debug
+:services.org N Nick 3 1015025977 service services.org services.org services.org +k 0 000000001 :Nickname Management
+:Nick J #debug
+:services.org N Note 3 1015025977 service services.org services.org services.org +k 0 000000001 :Note Services
+:Note J #debug
+:services.org N Oper 3 1015025977 service services.org services.org services.org +k 0 000000001 :IRC Operator Services
+:Oper J #debug
+:mothership.alien.intranet M #debug +smtinlooooo 5  riss Oper Note Nick Chan 1015025977
+:mothership.alien.intranet T #debug riss 1015026145 :Lets stay where we're welcome :(
+:mothership.alien.intranet M #fuckyouriss +tno  idle 1014067107
+:mothership.alien.intranet M #chaty +stnloooo 1234567890  riss phoenix idle pickle 000000001
+:mothership.alien.intranet T #chaty o0 1014917408 :AUSTHEX 7.FUCK IS A HUNK OF FUCKING SHIT - No error messages and more bugs than a fucking *TROPICAL* rainforest in the middle of insect breading season 4:( - it's slogan should be 'we make microsoft LOOK ACE!' does it come with a BSOD *feature*?No IT DISAPPEARS! 
+:mothership.alien.intranet END_OF_BURST
+:mothership.alien.intranet 401 Statistics NickOP@austnet.org :Sorry, there is no such nickname or channel
+:services.org GOPER :Completed Receiving Burst Data from Uplink - Received 10217 Bytes
+:mothership.alien.intranet PONG mothership.alien.intranet :Hello?

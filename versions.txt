@@ -1,3 +1,8 @@
-4 BitchX-1.0c18+ by panasync - Linux 2.4.14-mtx : Keep it to yourself!
-6 mIRC v6.01 Khaled Mardam-Bey
-1 xchat 1.8.7 Linux 2.2.19-hades  [i586/301MHz]
+9 BitchX-1.0c18+ by panasync - Linux 2.4.14-mtx : Keep it to yourself!
+2 BitchX-1.0c18+ by panasync - Linux 2.4.17 : Keep it to yourself!
+1 Running KVIrc 2.1.1 'Monolith' by Szymon Stefanek
+2 ircII EPIC4-1.0.1 Linux 2.4.8 - Accept no limitations.
+18 mIRC v6.01 Khaled Mardam-Bey
+3 mIRC32 v5.82 K.Mardam-Bey
+8 xchat 1.8.6 Linux 2.4.16-mtx [i686/301MHz]
+5 xchat 1.8.7 Linux 2.2.19-hades  [i586/301MHz]

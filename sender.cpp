@@ -115,6 +115,20 @@ void Sender::init(void)
  */
 void Sender::sendBurst(void)
 {
+# ifdef BURST_CLONE_SERVERS
+   Daemon::queueAdd(":" MY_SERVERNAME " S " BURST_CLONE_SERVER_PREFIX
+		    "0" BURST_CLONE_SERVER_SUFFIX " 2 0 "
+		    DODGEY_SERVER_TS_2 " P13 :" BURST_CLONE_SERVER_PREFIX 
+		    "1");
+   for (int i = 1; i != BURST_CLONE_SERVERS; i++) {
+      Daemon::queueAdd(String(":" BURST_CLONE_SERVER_PREFIX) + 
+		       String(i - 1) + BURST_CLONE_SERVER_SUFFIX " S " 
+		       BURST_CLONE_SERVER_PREFIX + String(i) +
+		       BURST_CLONE_SERVER_SUFFIX " " + String(i + 2) +
+		       " 0 " DODGEY_SERVER_TS_2 " P13 :" 
+		       BURST_CLONE_SERVER_PREFIX + String(i));
+   }
+# endif
    Daemon::queueAdd(":" MY_SERVERNAME " N " MY_USERNICK " 1 0 "
 		    MY_USERNAME " " MY_USERHOST " " MY_USERVWHOST " " 
 		    MY_SERVERNAME " " MY_USERMODES " 0 0 :" MY_USERDESC);
