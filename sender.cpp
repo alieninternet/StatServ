@@ -133,6 +133,10 @@ void Sender::sendBurst(void)
    }
 # endif
    Daemon::queueAdd("END_OF_BURST");
+# ifdef NICKOP_NAME
+   Daemon::queueAdd(":" MY_USERNAME " P " NICKOP_NAME " :identify " 
+		    NICKOP_PASSWD);
+# endif
 }
 
 
@@ -198,19 +202,22 @@ void Sender::sendStatsReply(String const &who)
 		    String(Daemon::getCountRx() / 1024) + "k, Tx: " +
 		    String(Daemon::getCountTx() / 1024) + "k");
    Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who + 
-		    " :                     Users online - " + 
+		    " :                    Users online - " +
 		    String(Daemon::getCountUsers()));
    Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who + 
-		    " :    User connections this session - " +
+		    " :                  Servers online - " +
+		    String(Daemon::getCountServers()));
+   Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who + 
+		    " :   User connections this session - " +
 		    String(Daemon::getCountConnects()));
    Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who + 
-		    " : User disconnections this session - " +
+		    " :User disconnections this session - " +
 		    String(Daemon::getCountDisconnects()));
    Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who + 
-		    " :                Ignored nicknames - " +
+		    " :               Ignored nicknames - " +
 		    String(Daemon::getCountIgnores()));
    Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who +
-		    " :             CTCP VERSION Replies - " +
+		    " :            CTCP VERSION Replies - " +
 		    String(Daemon::getCountVersions()) + " (" +
 		    String(Daemon::getUniqueVersions()) + " unique)");
 }

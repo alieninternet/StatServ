@@ -19,10 +19,8 @@ class Sender {
    static textbuff_t motdData;
    static textbuff_t helpData;
    
-   Sender(void)
-     {};
-   ~Sender(void)
-     {};
+   Sender(void) {};
+   ~Sender(void) {};
    
  public:
    static void init(void);

@@ -27,6 +27,10 @@ class Daemon {
    
    static int sock;				// Our connection socket
    static int maxSock;				// Max socket for select()
+
+   static char *inputBuffer;			// Socket input buffer
+   static unsigned int inputBufferSize;		// Socket input buffer size
+   static unsigned int inputBufferPosition;	// Socket input buffer position
    
    static struct sockaddr_in addr;		// Place to connect to
 
@@ -48,15 +52,15 @@ class Daemon {
    static time_t currentTime;			// The time "now"
 
    static unsigned long countUsers;		// Current users on-line
+   static unsigned long countServers;		// Current servers on-line
    static unsigned long countVersions;		// Version replies this session
    static unsigned long countConnects;		// Connections this session
    static unsigned long countDisconnects;	// Disconnections this session
    static unsigned long countTx;		// Bytes sent
    static unsigned long countRx;		// Bytes received
    
-   Daemon(void)					// Disabled constructor
-     {};
-   ~Daemon(void);
+   Daemon(void) {};
+   ~Daemon(void) {};
 
    static bool connect(void);			// Connect to the server
    static void disconnect(void);		// Disconnect
@@ -87,6 +91,7 @@ class Daemon {
    
  public:
    static void init(void);			// Initialise the daemon
+   static void deinit(void);			// De-init the daemon
    static void checkpoint(void);		// Checkpoint the databases
    static void shutdown(String const &);	// Shutdown
 
@@ -117,7 +122,7 @@ class Daemon {
 #endif
 	burstServers.insert(server.toLower());
      };
-
+   
    static bool inMainBurst(void)		// In the main connect burst?
      {
 	return !burstOk;
@@ -139,6 +144,16 @@ class Daemon {
      {
 	countUsers--;
 	countDisconnects++;
+     };
+
+   static void serverOn(void)			// A server signing on
+     {
+	countServers++;
+     };
+
+   static void serverOff(void)			// A server signing off
+     {
+	countServers--;
      };
    
    static void addIgnore(String const &who)	// Told to ignore someone
@@ -170,6 +185,11 @@ class Daemon {
    static unsigned long getCountUsers(void)
      {
 	return countUsers;
+     };
+   
+   static unsigned long getCountServers(void)
+     {
+	return countServers;
      };
    
    static unsigned long getCountVersions(void)

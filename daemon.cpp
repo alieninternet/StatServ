@@ -6,6 +6,7 @@
 #include "config.h"
 
 #include <string.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <fcntl.h>
 #include <errno.h>
@@ -22,6 +23,10 @@ namespace Daemon {
    int sock = -1;
    int maxSock = -1;
    
+   char *inputBuffer = 0;
+   unsigned int inputBufferSize = BUFFER_CHUNK_SIZE;
+   unsigned int inputBufferPosition = 0;
+
    struct sockaddr_in addr;
 
    queue <String> outputQueue;
@@ -41,30 +46,14 @@ namespace Daemon {
    time_t disconnectTime = 0;	// Make us want to connect upon startup
    time_t currentTime;		
 
-   unsigned long countUsers = 0;
+   unsigned long countUsers = 1;		// Include us..
+   unsigned long countServers = 2;		// Include us and our uplink
    unsigned long countVersions = 0;
-   unsigned long countConnects = 0;
+   unsigned long countConnects = 1;		// Include us again..
    unsigned long countDisconnects = 0;
    unsigned long countTx = 0;
    unsigned long countRx = 0;
 };
-
-
-/* ~Daemon - Shutdown procedure for the daemon
- * Original 18/02/2002 simonb
- */
-Daemon::~Daemon()
-{
-#ifdef DEBUG
-   cout << "Killing myself..." << endl;
-#endif   
-   
-   // Wipe the queue
-   queueKill();
-   
-   // Close the socket
-   ::close(sock);
-}
 
 
 /* init - Initialise the daemon
@@ -103,6 +92,13 @@ void Daemon::init(void)
       }
    }
    file.close();
+
+   // Do the initial malloc() for the input buffer
+   if (!(inputBuffer = (char *)malloc(inputBufferSize))) {
+      cout << "Could not allocate input buffer memory" << endl;
+      perror("malloc");
+      exit(1);
+   }
    
    // Set up the address we are to connect to
    memset(&addr, 0, sizeof(addr));
@@ -113,6 +109,26 @@ void Daemon::init(void)
 #ifdef DEBUG
    cout << "Initialised!" << endl;
 #endif
+}
+
+
+/* deinit - De-init the daemon
+ * Original 18/02/2002 simonb
+ */
+void Daemon::deinit(void)
+{
+#ifdef DEBUG
+   cout << "Killing myself..." << endl;
+#endif   
+   
+   // Wipe the queue
+   queueKill();
+
+   // Kill the input buffer allocation
+   free(inputBuffer);
+   
+   // Close the socket
+   ::close(sock);
 }
 
 
@@ -287,14 +303,13 @@ void Daemon::disconnect(void)
  */
 bool Daemon::handleInput(void)
 {
-   static char buf[1024];
-   int pos = 0, nb = 0;
+   int readBytes;
    char c = 0;
  
    // Loop until we get to the end of a line
    while (c != '\n') {
-      nb = ::read(sock, &c, 1);
-      switch(nb) {
+      readBytes = ::read(sock, &c, 1);
+      switch(readBytes) {
        case 0: // nothing read
 	 return true;
        case -1: // we broke perhaps?
@@ -307,23 +322,44 @@ bool Daemon::handleInput(void)
 	 return false;
       }
       
+      // Do we need to reallocate the input buffer?
+      if ((inputBufferPosition + 1) >= inputBufferSize) {
+	 inputBufferSize += BUFFER_CHUNK_SIZE;
+#ifdef DEBUG
+	 cout << "Reallocating inputBuffer to " << inputBufferSize << 
+	   " bytes"<< endl;
+#endif
+	 if (!(inputBuffer = 
+	       (char *)realloc((char *)inputBuffer, inputBufferSize))) {
+#ifdef DEBUG
+	    cout << "Could not reallocate more memory for the input buffer!" <<
+	      endl;
+#endif
+	    exit(1);
+	 }
+      }
+      
       // Add the character if it was read ok
-      if (nb) {
-	 buf[pos++] = c;
+      if (readBytes) {
+	 inputBuffer[inputBufferPosition++] = c;
       }
    }
    
    /* Check if the string has a \r\n style ending or the normal \r, and
     * replace that with a null char
     */
-   if ((pos > 1) && buf[pos-2] == '\r') {
-      buf[pos-2] = '\0';
+   if ((inputBufferPosition > 1) && 
+       (inputBuffer[inputBufferPosition - 2] == '\r')) {
+      inputBuffer[inputBufferPosition - 2] = '\0';
    } else {
-      buf[pos-1] = '\0';
+      inputBuffer[inputBufferPosition - 1] = '\0';
    }
    
+   // Reset the input buffer position
+   inputBufferPosition = 0;
+   
    // Make a nice useful string out of the buffer
-   String line(buf);
+   String line(inputBuffer);
    
    // Update the bytes RX counter
    countRx += line.length();

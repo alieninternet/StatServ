@@ -21,6 +21,10 @@
 // Version identification
 # define VERSION	"VersionServ 0.0000000000000001a <=- get my point? :)"
 
+// NickOP identification, comment these out to disable
+# define NICKOP_NAME	"NickOP@austnet.org"
+# define NICKOP_PASSWD	"qwp87346im"
+
 // Various files we need
 # define FILE_MOTD	"motd.txt"
 # define FILE_HELP	"help.txt"
@@ -68,6 +72,9 @@
 //# define BURST_CLONE_MODES		"+d"
 //# define BURST_CLONE_CHAN_PREFIX	"#CloneChan-"
 //# define BURST_CLONE_FAT_CHAN		"#Clones"
+
+// Size of the malloc()/realloc() chunks for the socket input buffer
+# define BUFFER_CHUNK_SIZE	128
 
 // Debugging?
 # define DEBUG

@@ -23,6 +23,7 @@ struct Parser::functionTableStruct const Parser::functionTable[] = {
      { "P",			parsePRIVMSG },
      { "Q",			parseQUIT },
      { "S",			parseSERVER },
+     { "SQUIT",			parseSQUIT },
      { "VERSION",		parseVERSION },
      { 0 }
 };
@@ -275,6 +276,17 @@ void PARSER_FUNC(Parser::parseSERVER)
       String serverName = tokens.nextToken();
       Daemon::gotSOB(serverName);
    }
+   
+   Daemon::serverOn();
+};
+
+
+/* parseSQUIT - Parse a server SQUIT message
+ * Original 19/02/2002 simonb
+ */
+void PARSER_FUNC(Parser::parseSQUIT)
+{
+   Daemon::serverOff();
 };
 
 

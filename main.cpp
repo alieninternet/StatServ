@@ -108,6 +108,9 @@ int main(void)
    
    // Shoot!
    Daemon::run();
+
+   // De-init the daemon
+   Daemon::deinit();
    
    // Clean up the signals (to be friendly)
    for (register unsigned int i = NSIG; i--;) {
