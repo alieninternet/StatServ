@@ -21,9 +21,7 @@ struct Parser::functionTableStruct const Parser::functionTable[] = {
      { "PING",			parsePING },
      { "PONG",			parsePONG },
      { "P",			parsePRIVMSG },
-     { "Q",			parseQUIT },
      { "S",			parseSERVER },
-     { "SQUIT",			parseSQUIT },
      { "VERSION",		parseVERSION },
      { "WHOIS",			parseWHOIS },
      { 0 }
@@ -92,8 +90,6 @@ void PARSER_FUNC(Parser::parseNICK)
    if (tokens.countTokens() < 13) {
       return;
    }
-   
-   Daemon::userOn();
    
    // If we are still in bursting mode, do not flood the network..
    if (!Daemon::inBurst(origin)) {
@@ -263,16 +259,6 @@ void PARSER_FUNC(Parser::parsePRIVMSG)
 #endif
 }
 
-
-/* parseQUIT - Parse a user signoff message
- * Original 18/02/2002 simonb
- */
-void PARSER_FUNC(Parser::parseQUIT)
-{
-   Daemon::userOff();
-};
-
-
 /* parseSERVER - Parse a server link 
  * Original 18/02/2002 simonb
  */
@@ -283,17 +269,6 @@ void PARSER_FUNC(Parser::parseSERVER)
       String serverName = tokens.nextToken();
       Daemon::gotSOB(serverName);
    }
-   
-   Daemon::serverOn();
-};
-
-
-/* parseSQUIT - Parse a server SQUIT message
- * Original 19/02/2002 simonb
- */
-void PARSER_FUNC(Parser::parseSQUIT)
-{
-   Daemon::serverOff();
 };
 
 

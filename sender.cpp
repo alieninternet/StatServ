@@ -226,24 +226,16 @@ void Sender::sendStatsReply(String const &who)
 		    String(Daemon::getCountRx() / 1024) + "k, Tx: " +
 		    String(Daemon::getCountTx() / 1024) + "k");
    Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who + 
-		    " :                     Users - " +
-		    String(Daemon::getCountUsers()) + " online (" +
-		    String(Daemon::getCountUserConnects()) + " connects, " +
-		    String(Daemon::getCountUserDisconnects()) + 
-		    " disconnects)");
-   Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who + 
-		    " :                   Servers - " +
-		    String(Daemon::getCountServers()) + " online (" +
-		    String(Daemon::getCountServerConnects()) + " connects, " +
-		    String(Daemon::getCountServerDisconnects()) + 
-		    " disconnects)");
+		    " :          User Connections - " +
+		    String(Daemon::getCountUserConnects()));
    Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who + 
 		    " :         Ignored nicknames - " +
 		    String(Daemon::getCountIgnores()));
    Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who +
 		    " :      CTCP VERSION Replies - " +
 		    String(Daemon::getCountVersions()) + " this session, " +
+		    String(Daemon::getCountVersionSpoofs()) + " spoofs, " +
 		    String(Daemon::getCountVersionsTotal()) + " total (" +
 		    String(Daemon::getUniqueVersions()) + 
-		    " unique in memory)");
+		    " unique)");
 }

@@ -56,10 +56,8 @@ class Daemon {
 
    static unsigned long countVersions;		// Version replies this session
    static unsigned long countVersionsTotal;	// Version replies in memory
+   static unsigned long countVersionSpoofs;	// Unwanted version replies
    static unsigned long countUserConnects;	// Connections this session
-   static unsigned long countUserDisconnects;	// Disconnections this session
-   static unsigned long countServerConnects;	// Connections this session
-   static unsigned long countServerDisconnects;	// Disconnections this session
    static unsigned long countTx;		// Bytes sent
    static unsigned long countRx;		// Bytes received
    
@@ -143,21 +141,6 @@ class Daemon {
 	countUserConnects++;
      };
    
-   static void userOff(void)			// A user signing off
-     {
-	countUserDisconnects++;
-     };
-
-   static void serverOn(void)			// A server signing on
-     {
-	countServerConnects++;
-     };
-
-   static void serverOff(void)			// A server signing off
-     {
-	countServerConnects++;
-     };
-   
    static void addIgnore(String const &who)	// Told to ignore someone
      {
 	ignoreList.insert(who.IRCtoLower());
@@ -186,19 +169,14 @@ class Daemon {
 	sentPing = false;
      };
 
-   static unsigned long getCountUsers(void)
-     {
-	return countUserConnects - countUserDisconnects;
-     };
-   
-   static unsigned long getCountServers(void)
-     {
-	return countServerConnects - countServerDisconnects;
-     };
-   
    static unsigned long getCountVersions(void)
      {
 	return countVersions;
+     };
+
+   static unsigned long getCountVersionSpoofs(void)
+     {
+	return countVersionSpoofs;
      };
 
    static unsigned long getCountVersionsTotal(void)
@@ -211,21 +189,6 @@ class Daemon {
 	return countUserConnects;
      };
    
-   static unsigned long getCountUserDisconnects(void)
-     {
-	return countUserDisconnects;
-     };
-
-   static unsigned long getCountServerConnects(void)
-     {
-	return countServerConnects;
-     };
-   
-   static unsigned long getCountServerDisconnects(void)
-     {
-	return countServerDisconnects;
-     };
-
    static unsigned long getCountTx(void)
      {
 	return countTx;

@@ -53,10 +53,8 @@ namespace Daemon {
 
    unsigned long countVersions = 0;
    unsigned long countVersionsTotal = 0;
+   unsigned long countVersionSpoofs = 0;
    unsigned long countUserConnects = 1;		// Include us again..
-   unsigned long countUserDisconnects = 0;
-   unsigned long countServerConnects = 2;	// Include us and our uplink
-   unsigned long countServerDisconnects = 0;
    unsigned long countTx = 0;
    unsigned long countRx = 0;
 };
@@ -180,10 +178,11 @@ void Daemon::gotVersion(String const &origin, String const &data)
       countVersions++;
       countVersionsTotal++;
       versions[data]++;
-#ifdef DEBUG
    } else {
+#ifdef DEBUG
       cout << "Spoof version? From " << origin << " (" << data << ')' << endl;
 #endif
+      countVersionSpoofs++;
    }
    
    // Remove the nickname from the version request map
