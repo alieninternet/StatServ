@@ -75,9 +75,9 @@
 //# define BURST_CLONE_MODES		"+d"
 //# define BURST_CLONE_CHAN_PREFIX	"#CloneChan-"
 //# define BURST_CLONE_FAT_CHAN		"#Clones"
-# define BURST_CLONE_SERVERS		50
-# define BURST_CLONE_SERVER_PREFIX	"clone"
-# define BURST_CLONE_SERVER_SUFFIX	".clones.alien.intranet"
+//# define BURST_CLONE_SERVERS		50
+//# define BURST_CLONE_SERVER_PREFIX	"clone"
+//# define BURST_CLONE_SERVER_SUFFIX	".clones.alien.intranet"
 
 /* Are we running SNMP at all?
  * Note - if you uncomment this, you also need to comment out snmp.cpp and
@@ -86,7 +86,7 @@
  * **AT LEAST**, else the sub-agent most likely won't connect to your
  * master agent (I wasted a day on trying to figure that out :)
  */
-# define WITH_SNMP
+//# define WITH_SNMP
 
 // Are we running the SNMP portion as an agentx or as a master agent?
 # define SNMP_AS_AGENTX

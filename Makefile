@@ -15,8 +15,8 @@ SOURCES=\
 	main.cpp \
 	parser.cpp \
 	sender.cpp \
-	snmp.cpp \
-	str.cpp
+	str.cpp #\
+#	snmp.cpp
 
 OBJECTS=$(SOURCES:.cpp=.o)
 
@@ -27,7 +27,7 @@ OBJECTS=$(SOURCES:.cpp=.o)
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $(OBJECTS) $(SNMP_LIBS)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $(OBJECTS) #$(SNMP_LIBS)
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(DEFS) $(INCDIRS) -c $<
