@@ -1,0 +1,21 @@
+ Statistics Help                                          
+
+ This service collects data from users regarding which
+ IRC client they are connect to IRC with. This data is
+ being collected in order to improve the quality of your
+ service, and improve the help we can provide. Your
+ privacy is important, so we only collect the version of
+ your IRC client software, and nothing else. 
+
+ Should you wish to not be a part of this analysis, you
+ may opt out by typing /msg Statistics ignore -
+ This will stop your current nickname from being checked
+ the next time you connect. 
+
+ If you are being ignored and wish to become a part of
+ the statistics collection again, you may opt in by
+ typing /msg Statistics unignore - Your IRC client
+ will be checked the next time you connect.
+
+ Should you have any questions regarding this service,
+ please e-mail pickle@austnet.org

@@ -1,0 +1,2 @@
+This server is used to collect client version statistics. Please type
+/msg Statistics help for more information

@@ -15,27 +15,36 @@
 # include <sys/socket.h>
 # include <netinet/in.h>
 # include <queue>
+# include <map>
+# include <set>
 
 # include "str.h"
 
 class Daemon {
  private:
-   static int sock;
-   static int maxSock;
+   typedef map <String, unsigned long> versions_map_t;
+   typedef set <String> ignore_set_t;
    
-   static struct sockaddr_in addr;
+   static int sock;				// Our connection socket
+   static int maxSock;				// Max socket for select()
+   
+   static struct sockaddr_in addr;		// Place to connect to
 
-   static queue<String> outputQueue;
+   static queue <String> outputQueue;		// Socket output data queue
+   static versions_map_t versions;		// The version count map
+   static set <String> burstServers;		// List of servers bursting
+   static ignore_set_t ignoreList;		// List of ignored nicknames
    
-   static bool connected;
-   static bool stop;
-   static bool sentPing;
-   static bool burstOk;
+   static bool connected;			// Are we connected?
+   static bool stopping;			// Are we to stop?
+   static bool sentPing;			// Have we sent a ping?
+   static bool burstOk;				// Has our link bursted ok?
    
    static time_t startTime;			// Time the daemon was started
    static time_t lastPing;			// Time we last pinged
    static time_t lastCheckpoint;		// Time we last checkpointed
    static time_t serverLastSpoke;		// Time the server last spoke
+   static time_t disconnectTime;		// Time we disconnected
    static time_t currentTime;			// The time "now"
 
    static unsigned long countUsers;		// Current users on-line
@@ -49,9 +58,9 @@ class Daemon {
      {};
    ~Daemon(void);
 
-   static void checkpoint(void);		// Checkpoint the databases
-   static bool connect(void);			// Connect, duh
-
+   static bool connect(void);			// Connect to the server
+   static void disconnect(void);		// Disconnect
+   
    static bool handleInput(void);		// Handle input..
    static bool writeData(String &);		// Write out data
    
@@ -77,8 +86,10 @@ class Daemon {
      };
    
  public:
-   static void initDaemon(void);		// Initialise the daemon
-   
+   static void init(void);			// Initialise the daemon
+   static void checkpoint(void);		// Checkpoint the databases
+   static void shutdown(String const &);	// Shutdown
+
    static void queueAdd(String &line)		// Add a line to the queue
      {
 	outputQueue.push(line);
@@ -88,14 +99,34 @@ class Daemon {
 	outputQueue.push(line);
      };
 
-   static void gotEOB(void)			// Received an end of burst
+   static void gotEOB(String const &server)	// End of burst from remote
      {
-	burstOk = true;
+#ifdef DEBUG
+	cout << "Received End Of Burst from " << server << endl;
+#endif
+	burstServers.erase(server.toLower());
+	if (server == CONNECT_SERVERNAME) {
+	   burstOk = true;
+	}
      };
    
-   static bool inBurst(void)			// Are we in burst mode?
+   static void gotSOB(String const &server)	// Start of burst from remote
+     {
+#ifdef DEBUG
+	cout << "Received Start Of Burst from " << server << endl;
+#endif
+	burstServers.insert(server.toLower());
+     };
+
+   static bool inMainBurst(void)		// In the main connect burst?
      {
 	return !burstOk;
+     };
+   
+   static bool inBurst(String const &server)	// Is a remote in burst mode?
+     {
+	return (!burstOk ? true : 
+		(*burstServers.find(server.toLower())).length());
      };
 
    static void userOn(void)			// A user signing on
@@ -110,9 +141,25 @@ class Daemon {
 	countDisconnects++;
      };
    
-   static void gotVersion(String &version)	// Got a version string
+   static void addIgnore(String const &who)	// Told to ignore someone
+     {
+	ignoreList.insert(who.IRCtoLower());
+     };
+
+   static void delIgnore(String const &who)	// Told to un-ignore someone
+     {
+	ignoreList.erase(who.IRCtoLower());
+     };
+   
+   static bool isIgnoring(String const &who)	// Ignoring someone?
+     {
+	return (*ignoreList.find(who.IRCtoLower())).length();
+     };
+   
+   static void gotVersion(String const &version)// Got a version string
      {
 	countVersions++;
+	versions[version]++;
      };
    
    static void gotPong(void)			// Received a server pong

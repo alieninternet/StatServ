@@ -15,11 +15,14 @@
 // Function table (list of commands)
 struct Parser::functionTableStruct const Parser::functionTable[] = {
      { "END_OF_BURST",		parseEOB },
+     { "MOTD",			parseMOTD },
      { "N",			parseNICK },
      { "NO",			parseNOTICE },
      { "PING",			parsePING },
      { "P",			parsePRIVMSG },
      { "Q",			parseQUIT },
+     { "S",			parseSERVER },
+     { "VERSION",		parseVERSION },
      { 0 }
 };
 
@@ -31,7 +34,7 @@ void Parser::parseLine(String &line)
    // Break the line apart using the string tokeniser
    StringTokens st(line);
    String origin = "";
-   
+
    // Does this line start with a ':' (server form)?
    if (line[0] == ':') {
       // Skip the first parameter, we do not care about it anyway
@@ -58,11 +61,17 @@ void Parser::parseLine(String &line)
  */
 void PARSER_FUNC(Parser::parseEOB)
 {
-#ifdef DEBUG
-   cout << "Received End Of Burst line from " << origin << endl;
-#endif
-   Daemon::gotEOB();
+   Daemon::gotEOB(origin);
 }
+
+
+/* parseMOTD - Parse a server link 
+ * Original 19/02/2002 simonb
+ */
+void PARSER_FUNC(Parser::parseMOTD)
+{
+   Sender::sendMOTDreply(origin);
+};
 
 
 /* parseNICK - Handle an new user signing on (or a nick change eek!)
@@ -80,12 +89,15 @@ void PARSER_FUNC(Parser::parseNICK)
    Daemon::userOn();
    
    // If we are still in bursting mode, do not flood the network..
-   if (!Daemon::inBurst()) {
+   if (!Daemon::inBurst(origin)) {
       // Ok, grab the nickname
       String nickname = tokens.nextToken();
       
-      // Check if we should ignore this nickname here??
-
+      // Check if we should ignore this nickname
+      if (Daemon::isIgnoring(nickname)) {
+	 return;
+      }
+	  
       // Send out a request for that nickname
       Sender::sendCTCPversion(nickname);
    }
@@ -167,6 +179,9 @@ void PARSER_FUNC(Parser::parsePRIVMSG)
 	 String data = CTCPtokens.rest();
 	 Sender::sendCTCPpingReply(origin, data);
 	 return;
+      } else if (CTCPcommand == "VERSION") {
+	 Sender::sendCTCPversionReply(origin);
+	 return;
 #ifdef DEBUG
       } else {
 	 cout << "CTCP(P) " << origin << '>' << message << endl;
@@ -175,9 +190,41 @@ void PARSER_FUNC(Parser::parsePRIVMSG)
       return;
    }
    
-   // An ordinary message..
-#ifdef DEBUG
-   cout << "P " << origin << '>' << message << endl;
+   // An ordinary message.. break it up and grab the first word
+   StringTokens commandLine(message);
+   String command = commandLine.nextToken().toUpper();
+
+   String reply = "";
+
+   // We only know one command, maybe this is it?
+   if (command == "HELP") {
+      Sender::sendHelpReply(origin);
+      return;
+#ifdef IGNORE_ALLOWED
+   } else if (command == "IGNORE") {
+      if (!Daemon::isIgnoring(origin)) {
+	 reply = MSG_IGNORE;
+	 Daemon::addIgnore(origin);
+      } else {
+	 reply = MSG_IGNORE_ON;
+      }
+      Sender::sendNOTICE(origin, reply);
+      return;
+   } else if (command == "UNIGNORE") {
+      if (Daemon::isIgnoring(origin)) {
+	 reply = MSG_UNIGNORE;
+	 Daemon::delIgnore(origin);
+      } else {
+	 reply = MSG_UNIGNORE_ON;
+      }
+      Sender::sendNOTICE(origin, reply);
+      return;
+#endif
+   }
+   
+#ifndef ANNOYING_SILENT_TREATMENT
+   reply = MSG_UNKNOWN;
+   Sender::sendNOTICE(origin, reply);
 #endif
 }
 
@@ -188,4 +235,26 @@ void PARSER_FUNC(Parser::parsePRIVMSG)
 void PARSER_FUNC(Parser::parseQUIT)
 {
    Daemon::userOff();
+};
+
+
+/* parseSERVER - Parse a server link 
+ * Original 18/02/2002 simonb
+ */
+void PARSER_FUNC(Parser::parseSERVER)
+{
+   if (!Daemon::inMainBurst()) {
+      // Add this server to the start-of-burst list
+      String serverName = tokens.nextToken();
+      Daemon::gotSOB(serverName);
+   }
+};
+
+
+/* parseVERSION - Parse a server link 
+ * Original 19/02/2002 simonb
+ */
+void PARSER_FUNC(Parser::parseVERSION)
+{
+   Sender::sendVERSIONreply(origin);
 };

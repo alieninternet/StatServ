@@ -4,9 +4,111 @@
  */
 
 # include "config.h"
-# include "sender.h"
-# include "daemon.h"
 
+# include <fstream.h>
+# include <list>
+
+# include "sender.h"
+
+
+// Variables, wonderous variables...
+namespace Sender {
+   Sender::textbuff_t motdData;
+   Sender::textbuff_t helpData;
+};
+
+
+/* init - Load various files we need for certain output (eg. help/motd)
+ * Original 19/02/2002 simonb
+ */
+void Sender::init(void)
+{
+   ifstream file;
+   String line = "";
+   
+   /* This is our list. Single linked lists are 'filled' backwards, so we
+    * need to make a backwards list then make it fill again into the real
+    * list .. backwards again :)
+    */
+   Sender::textbuff_t inputList;
+   
+   // Clear the lists
+   motdData.clear();
+   helpData.clear();
+   
+   // Open our MOTD file
+   file.open(FILE_MOTD);
+   
+   // Check
+   if (!file) {
+      cout << "Could not open " FILE_MOTD " for reading" << endl;
+   } else {
+      /* Run through the file and read the lines.. We do it this way
+       * to avoid that ugly last line :)
+       */
+      for (;;) {
+	 file >> line;
+	 
+	 if (!file.eof()) {
+	    inputList.push_front(line);
+	 } else {
+	    break;
+	 }
+      }
+      
+      // Copy the input list to the real motdData list backwards to fix it
+      for (Sender::textbuff_t::iterator it = inputList.begin();
+	   it != inputList.end(); it++) {
+	 motdData.push_front(*it);
+      }
+   }
+   file.close();
+   
+   // Reset the inputList
+   inputList.clear();
+   
+   // Open our HELP file
+   file.open(FILE_HELP);
+   
+   // Check
+   if (!file) {
+      cout << "Could not open " FILE_HELP " for reading" << endl;
+   } else {
+      // Run through the file and read the lines
+      /* Run through the file and read the lines.. We do it this way
+       * to avoid that ugly last line :)
+       */
+      for (;;) {
+	 file >> line;
+	 
+	 if (!file.eof()) {
+	    /* If the line is 'blank', we have to add a space to make it send
+	     * properly
+	     */
+	    if (!line.length()) {
+	       line = " ";
+	    }
+	    
+	    inputList.push_front(line);
+	 } else {
+	    break;
+	 }
+      }
+
+      // Copy the input list to the real helpData list backwards to fix it
+      for (Sender::textbuff_t::iterator it = inputList.begin();
+	   it != inputList.end(); it++) {
+	 helpData.push_front(*it);
+      }
+   }
+   file.close();
+}
+
+
+/* sendBurst - Send out a connection burst
+ * Original 18/02/2002 simonb
+ * Note: This function is ugly - damned #ifdefs :(
+ */
 void Sender::sendBurst(void)
 {
    Daemon::queueAdd(":" MY_SERVERNAME " N " MY_USERNICK " 1 0 "
@@ -33,29 +135,38 @@ void Sender::sendBurst(void)
    Daemon::queueAdd("END_OF_BURST");
 };
 
-void Sender::sendCTCPpingReply(String &who, String &data)
+
+/* sendMOTDreply - Send out a reply to an MOTD request
+ * Original 19/02/2002 simonb
+ */
+void Sender::sendMOTDreply(String const &who)
 {
-   Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who +
-		    " :\001PING " + data + "\001");
-};
-   
-void Sender::sendCTCPversion(String &who)
-{
-   Daemon::queueAdd(String(":" MY_USERNICK " P ") + who +
-		    " :\001VERSION\001");
-};
-   
-void Sender::sendPING(String &data)
-{
-   Daemon::queueAdd(String(":" MY_SERVERNAME " PONG ") + data);
+   // Send the header
+   Daemon::queueAdd(String(":" MY_SERVERNAME " 375 ") + who +
+		    " :- " MY_SERVERNAME " Server Message of the Day.");
+
+   // Loop and send the MOTD data
+   for (Sender::textbuff_t::iterator it = motdData.begin(); 
+	it != motdData.end(); it++) {
+      Daemon::queueAdd(String(":" MY_SERVERNAME " 372 ") + who + " :- " +
+		       *it);
+   }
+
+   // Send the footer
+   Daemon::queueAdd(String(":" MY_SERVERNAME " 376 ") + who +
+		    " :End of MOTD");
 };
 
-void Sender::sendPONG(String &data)
+
+/* sendHelpReply - Send out a reply to HELP
+ * Original 19/02/2002 simonb
+ */
+void Sender::sendHelpReply(String const &who)
 {
-   Daemon::queueAdd(String(":" MY_SERVERNAME " PONG ") + data);
+   // Loop and send the help data
+   for (Sender::textbuff_t::iterator it = helpData.begin(); 
+	it != helpData.end(); it++) {
+      sendNOTICE(who, *it);
+   }
 };
-   
-void Sender::sendWALLOPS(String &data)
-{
-   Daemon::queueAdd(String(":" MY_USERNICK " WALLOPS :") + data);
-};
+
