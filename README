@@ -10,6 +10,11 @@ being a part of the statistics if they so wish. Versions are stored with
 counts rather than just a list of what has been received to avoid large
 wasteful data files. Data is saved to the hard drive upon checkpoint times.
 
+Users spoofing CTCP Versions has been avoided as much as possible by adding
+users to a check-list when requesting. Version data is only accepted if it
+is received within the reply time-out time. This should avoid as many
+spoofed version requests as possible.
+
 Testing modes are available too, with a small (cheap) clone-bot generator
 built into the burst, capable of overloading servers very very easily as it
 does not use up file descriptors! Very handy for testing servers.

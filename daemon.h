@@ -14,6 +14,7 @@
 # include <sys/types.h>
 # include <sys/socket.h>
 # include <netinet/in.h>
+# include <arpa/inet.h>
 # include <queue>
 # include <map>
 # include <set>
@@ -23,6 +24,7 @@
 class Daemon {
  private:
    typedef map <String, long> versions_map_t;
+   typedef map <String, time_t> version_request_map_t;
    typedef set <String> ignore_set_t;
    
    static int sock;				// Our connection socket
@@ -36,6 +38,7 @@ class Daemon {
 
    static queue <String> outputQueue;		// Socket output data queue
    static versions_map_t versions;		// The version count map
+   static version_request_map_t versionRequests;// The version request map
    static set <String> burstServers;		// List of servers bursting
    static ignore_set_t ignoreList;		// List of ignored nicknames
    
@@ -51,11 +54,12 @@ class Daemon {
    static time_t disconnectTime;		// Time we disconnected
    static time_t currentTime;			// The time "now"
 
-   static unsigned long countUsers;		// Current users on-line
-   static unsigned long countServers;		// Current servers on-line
    static unsigned long countVersions;		// Version replies this session
-   static unsigned long countConnects;		// Connections this session
-   static unsigned long countDisconnects;	// Disconnections this session
+   static unsigned long countVersionsTotal;	// Version replies in memory
+   static unsigned long countUserConnects;	// Connections this session
+   static unsigned long countUserDisconnects;	// Disconnections this session
+   static unsigned long countServerConnects;	// Connections this session
+   static unsigned long countServerDisconnects;	// Disconnections this session
    static unsigned long countTx;		// Bytes sent
    static unsigned long countRx;		// Bytes received
    
@@ -136,24 +140,22 @@ class Daemon {
 
    static void userOn(void)			// A user signing on
      {
-	countUsers++;
-	countConnects++;
+	countUserConnects++;
      };
    
    static void userOff(void)			// A user signing off
      {
-	countUsers--;
-	countDisconnects++;
+	countUserDisconnects++;
      };
 
    static void serverOn(void)			// A server signing on
      {
-	countServers++;
+	countServerConnects++;
      };
 
    static void serverOff(void)			// A server signing off
      {
-	countServers--;
+	countServerConnects++;
      };
    
    static void addIgnore(String const &who)	// Told to ignore someone
@@ -171,10 +173,12 @@ class Daemon {
 	return (*ignoreList.find(who.IRCtoLower())).length();
      };
    
-   static void gotVersion(String const &version)// Got a version string
+   static void gotVersion(String const &,
+			  String const &);	// Got a version string
+
+   static void addVersionRequest(String const &nick)// Add a version request
      {
-	countVersions++;
-	versions[version]++;
+	versionRequests[nick.IRCtoLower()] = currentTime;
      };
    
    static void gotPong(void)			// Received a server pong
@@ -184,12 +188,12 @@ class Daemon {
 
    static unsigned long getCountUsers(void)
      {
-	return countUsers;
+	return countUserConnects - countUserDisconnects;
      };
    
    static unsigned long getCountServers(void)
      {
-	return countServers;
+	return countServerConnects - countServerDisconnects;
      };
    
    static unsigned long getCountVersions(void)
@@ -197,14 +201,29 @@ class Daemon {
 	return countVersions;
      };
 
-   static unsigned long getCountConnects(void)
+   static unsigned long getCountVersionsTotal(void)
      {
-	return countConnects;
+	return countVersionsTotal;
+     };
+
+   static unsigned long getCountUserConnects(void)
+     {
+	return countUserConnects;
      };
    
-   static unsigned long getCountDisconnects(void)
+   static unsigned long getCountUserDisconnects(void)
      {
-	return countDisconnects;
+	return countUserDisconnects;
+     };
+
+   static unsigned long getCountServerConnects(void)
+     {
+	return countServerConnects;
+     };
+   
+   static unsigned long getCountServerDisconnects(void)
+     {
+	return countServerDisconnects;
      };
 
    static unsigned long getCountTx(void)

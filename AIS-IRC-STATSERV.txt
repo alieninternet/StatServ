@@ -1,0 +1,147 @@
+AIS-IRC-STATSERV DEFINITIONS ::= BEGIN
+
+--
+-- AIS-IRC-STATSERV.txt
+-- SNMP module for the StatServ IRC server
+-- Author: Simon Butcher
+-- Copyright (c) 2002 Alien Internet Services
+--
+
+--
+-- We need to include some stuff from other MIBs.
+--
+IMPORTS
+	MODULE-IDENTITY, enterprises
+		FROM SNMPv2-SMI;
+
+
+--
+-- Begin the evolution module with the first definition
+--
+statserv	MODULE-IDENTITY
+		LAST-UPDATED	"200202200741Z"
+		ORGANIZATION	"Alien Internet Services"
+		CONTACT-INFO	"        Simon Butcher
+				         Alien Internet Services
+				         Taconic House
+				         41 Eastfield Road
+				         Croydon 3136
+				         Victoria, Australia
+					
+				  Phone: +61-3-9879-8052
+				    Fax: +61-3-9893-2793
+				 E-mail: simonb@alien.net.au"
+		DESCRIPTION	
+			"StatServ top level definitions"
+		::= { irc 3 }
+
+
+--
+-- Define where this comes from (enterprises.ais.irc)
+--
+ais		OBJECT IDENTIFIER ::= { enterprises 4379 }
+irc		OBJECT IDENTIFIER ::= { ais 3 }
+
+
+--
+-- Data definitions
+--
+upTime				OBJECT-TYPE
+		SYNTAX		TimeTicks
+		MAX-ACCESS	read-only
+		STATUS		current
+		DESCRIPTION
+			"Server up-time"
+	::= { statserv 1 }
+
+countTx				OBJECT-TYPE
+		SYNTAX		Counter
+		MAX-ACCESS	read-only
+		STATUS		current
+		DESCRIPTION
+			"Bytes sent since startup"
+	::= { statserv 2 }
+
+countRx				OBJECT-TYPE
+		SYNTAX		Counter
+		MAX-ACCESS	read-only
+		STATUS		current
+		DESCRIPTION
+			"Bytes received since startup"
+	::= { statserv 3 }
+
+countUsers			OBJECT-TYPE
+		SYNTAX		Gauge
+		MAX-ACCESS	read-only
+		STATUS		current
+		DESCRIPTION
+			"Total users on-line"
+	::= { statserv 4 }
+
+countUserConnects		OBJECT-TYPE
+		SYNTAX		Counter
+		MAX-ACCESS	read-only
+		STATUS		current
+		DESCRIPTION
+			"Number of user connections since startup"
+	::= { statserv 5 }
+
+countUserDisconnects		OBJECT-TYPE
+		SYNTAX		Counter
+		MAX-ACCESS	read-only
+		STATUS		current
+		DESCRIPTION
+			"Number of user disconnections since startup"
+	::= { statserv 6 }
+
+countServers			OBJECT-TYPE
+		SYNTAX		Gauge
+		MAX-ACCESS	read-only
+		STATUS		current
+		DESCRIPTION
+			"Total users on-line"
+	::= { statserv 7 }
+
+countServerConnects		OBJECT-TYPE
+		SYNTAX		Counter
+		MAX-ACCESS	read-only
+		STATUS		current
+		DESCRIPTION
+			"Number of user connections since startup"
+	::= { statserv 8 }
+
+countServerDisconnects		OBJECT-TYPE
+		SYNTAX		Counter
+		MAX-ACCESS	read-only
+		STATUS		current
+		DESCRIPTION
+			"Number of user disconnections since startup"
+	::= { statserv 9 }
+
+countVersionReplies		OBJECT-TYPE
+		SYNTAX		Counter
+		MAX-ACCESS	read-only
+		STATUS		current
+		DESCRIPTION
+			"Number of CTCP version replies since startup"
+	::= { statserv 10 }
+
+countVersionRepliesTotal	OBJECT-TYPE
+		SYNTAX		Counter
+		MAX-ACCESS	read-only
+		STATUS		current
+		DESCRIPTION
+			"Number of CTCP version replies in memory"
+	::= { statserv 11 }
+
+countVersionUniqueDB		OBJECT-TYPE
+		SYNTAX		Counter
+		MAX-ACCESS	read-only
+		STATUS		current
+		DESCRIPTION
+			"Number of unique CTCP version replies in memory"
+	::= { statserv 12 }
+
+
+
+END

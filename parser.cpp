@@ -72,7 +72,7 @@ void PARSER_FUNC(Parser::parseEOB)
 }
 
 
-/* parseMOTD - Parse a server link 
+/* parseMOTD - Parse an MOTD request
  * Original 19/02/2002 simonb
  */
 void PARSER_FUNC(Parser::parseMOTD)
@@ -106,6 +106,7 @@ void PARSER_FUNC(Parser::parseNICK)
       }
 	  
       // Send out a request for that nickname
+      Daemon::addVersionRequest(nickname);
       Sender::sendCTCPversion(nickname);
    }
 }
@@ -133,11 +134,7 @@ void PARSER_FUNC(Parser::parseNOTICE)
       
       // Check if this a version reply (most likely)
       if (CTCPcommand == "VERSION") {
-	 String data = CTCPtokens.rest();
-#ifdef DEBUG
-	 cout << "Version Reply: " << data << endl;
-#endif
-	 Daemon::gotVersion(data);
+	 Daemon::gotVersion(origin, CTCPtokens.rest());
 	 return;
 #ifdef DEBUG
       } else {
@@ -247,6 +244,15 @@ void PARSER_FUNC(Parser::parsePRIVMSG)
 	 return;
 # ifdef STATS_PASSPHRASE
       }
+# endif
+#endif
+#ifdef DEBUG
+# ifdef ALLOW_RAW_COMMAND
+   } else if (command == "RAW") {
+      String data = commandLine.rest();
+      cout << "RAW " << origin << '>' << data << endl;
+      Sender::sendRaw(data);
+      return;
 # endif
 #endif
    }

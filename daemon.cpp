@@ -17,6 +17,10 @@
 #include "parser.h"
 #include "sender.h"
 
+#ifdef WITH_SNMP
+# include "snmp.h"
+#endif
+
 
 // The variables!
 namespace Daemon {
@@ -31,6 +35,7 @@ namespace Daemon {
 
    queue <String> outputQueue;
    Daemon::versions_map_t versions;
+   Daemon::version_request_map_t versionRequests;
    set <String> burstServers;
    Daemon::ignore_set_t ignoreList;
    
@@ -46,11 +51,12 @@ namespace Daemon {
    time_t disconnectTime = 0;	// Make us want to connect upon startup
    time_t currentTime;		
 
-   unsigned long countUsers = 1;		// Include us..
-   unsigned long countServers = 2;		// Include us and our uplink
    unsigned long countVersions = 0;
-   unsigned long countConnects = 1;		// Include us again..
-   unsigned long countDisconnects = 0;
+   unsigned long countVersionsTotal = 0;
+   unsigned long countUserConnects = 1;		// Include us again..
+   unsigned long countUserDisconnects = 0;
+   unsigned long countServerConnects = 2;	// Include us and our uplink
+   unsigned long countServerDisconnects = 0;
    unsigned long countTx = 0;
    unsigned long countRx = 0;
 };
@@ -61,6 +67,10 @@ namespace Daemon {
  */
 void Daemon::init(void)
 {
+#ifdef DEBUG
+   cout << "Initialising Daemon..." << endl;
+#endif
+   
    // Set up the time variables
    startTime = lastPing = lastCheckpoint = serverLastSpoke = currentTime =
      time(NULL);
@@ -68,6 +78,7 @@ void Daemon::init(void)
    // Wipe the lists we have
    queueKill();
    versions.clear();
+   versionRequests.clear();
    burstServers.clear();
    ignoreList.clear();
 
@@ -96,9 +107,11 @@ void Daemon::init(void)
 	    }
 	    
 	    versions[st.rest()] = count;
+	    countVersionsTotal += count;
 	 }
       }
    }
+   file.close();
    
    // Load the ignore list data
    file.open(FILE_IGNORES);
@@ -129,12 +142,8 @@ void Daemon::init(void)
    // Set up the address we are to connect to
    memset(&addr, 0, sizeof(addr));
    addr.sin_family = AF_INET;
-   addr.sin_addr.s_addr = CONNECT_SERVER;
+   addr.sin_addr.s_addr = htonl(CONNECT_SERVER);
    addr.sin_port = htons(CONNECT_PORT);
-   
-#ifdef DEBUG
-   cout << "Initialised!" << endl;
-#endif
 }
 
 
@@ -155,6 +164,30 @@ void Daemon::deinit(void)
    
    // Close the socket
    ::close(sock);
+}
+
+
+/* gotVersion - Process a received version line, if we need to
+ * Original 18/02/2002 simonb
+ */
+void Daemon::gotVersion(String const &origin, String const &data)
+{
+   if ((versionRequests[origin.IRCtoLower()] + VERSION_REPLY_TIMEOUT) >=
+       currentTime) {
+#ifdef DEBUG
+      cout << "Version Reply: " << data << endl;
+#endif
+      countVersions++;
+      countVersionsTotal++;
+      versions[data]++;
+#ifdef DEBUG
+   } else {
+      cout << "Spoof version? From " << origin << " (" << data << ')' << endl;
+#endif
+   }
+   
+   // Remove the nickname from the version request map
+   versionRequests.erase(origin.IRCtoLower());
 }
 
 
@@ -203,6 +236,21 @@ void Daemon::checkpoint(void)
    file.close();
 #endif
 
+   // Wipe out expired entries in the version request map
+   for (;;) {
+again:
+      for (Daemon::version_request_map_t::iterator it = 
+	   versionRequests.begin(); it != versionRequests.end(); it++) {
+	 if (((*it).second + VERSION_REPLY_TIMEOUT) >= currentTime) {
+	    versionRequests.erase(it);
+	    goto again;
+	 }
+      }
+      
+      // If the loop ended successfully, break out of the nearly-endless-loop
+      break;
+   }
+   
    // Finally, update the checkpoint time
    lastCheckpoint = currentTime;
 }
@@ -270,8 +318,9 @@ bool Daemon::connect(void)
       return false;
 #ifdef DEBUG
    } else {
-      cout << "Connection called to " << hex << CONNECT_SERVER << 
-	", port " << dec << CONNECT_PORT << endl;
+      cout << "Connection called to " << 
+	inet_ntoa(addr.sin_addr) << ", port " << 
+	CONNECT_PORT << endl;
 #endif
    }
 
@@ -527,6 +576,11 @@ void Daemon::run(void)
 	     (currentTime >= (time_t)(disconnectTime + RECONNECT_DELAY))) {
 	    connect();
 	 }
+	 
+#ifdef WITH_SNMP
+	 // Give the SNMP agent module a slice of our time
+	 SNMP::slice();
+#endif
       } else if (!queueReady() || !connected) {
 	 // We are stopping, and the output queue is empty: Break the loop
 	 break;

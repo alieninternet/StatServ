@@ -3,13 +3,19 @@ CXX=c++
 
 CXXFLAGS=-O3 -Wall
 
-TARGET=versionserv
+TARGET=statserv
+
+SNMP_LIBS=\
+	-L/usr/local/lib -lucdagent -lucdmibs -lsnmp \
+	-L/usr/lib -ldl \
+	-L/usr/local/ssl/lib -lcrypto
 
 SOURCES=\
 	daemon.cpp \
 	main.cpp \
 	parser.cpp \
 	sender.cpp \
+	snmp.cpp \
 	str.cpp
 
 OBJECTS=$(SOURCES:.cpp=.o)
@@ -21,7 +27,7 @@ OBJECTS=$(SOURCES:.cpp=.o)
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $(OBJECTS)
+	$(CXX) $(CXXFLAGS) $(LDFLAGS) -o $@ $(OBJECTS) $(SNMP_LIBS)
 
 %.o: %.cpp
 	$(CXX) $(CXXFLAGS) $(DEFS) $(INCDIRS) -c $<

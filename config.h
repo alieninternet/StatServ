@@ -19,7 +19,7 @@
 //# define STATS_PASSPHRASE	"man, gimme those stats"
 
 // Version identification
-# define VERSION	"VersionServ 0.0000000000000001a <=- get my point? :)"
+# define VERSION	"StatServ 0.1"
 
 // NickOP identification, comment these out to disable
 # define NICKOP_NAME	"NickOP@austnet.org"
@@ -52,8 +52,8 @@
 # define MY_USERVWHOST	"stats.intranet"
 
 // Server info to connect to
-//# define CONNECT_SERVER			0x0100007F
-# define CONNECT_SERVER			0xFE0210AC
+//# define CONNECT_SERVER			0x7F000001
+# define CONNECT_SERVER			0xAC1002FE
 # define CONNECT_SERVERNAME		"mothership.alien.intranet"
 # define CONNECT_PORT			6667
 # define CONNECT_PASSWORD		"secretword"
@@ -63,6 +63,7 @@
 # define TIMEOUT			600
 # define RECONNECT_DELAY		30
 # define CHECKPOINT_TIME		3600
+# define VERSION_REPLY_TIMEOUT		60
 
 // Built-in bursting test by way of clones (uncomment to enable)
 //# define BURST_CLONE_TEST		50
@@ -71,14 +72,31 @@
 //# define BURST_CLONE_CHAN_PREFIX	"#CloneChan-"
 //# define BURST_CLONE_FAT_CHAN		"#Clones"
 
+/* Are we running SNMP at all?
+ * Note - if you uncomment this, you also need to comment out snmp.cpp and
+ * the SNMP_LIBS variable in the makefile.
+ * Also, you will be wanting ucd-snmp/net-snmp (same thing) version 4.2.4
+ * **AT LEAST**, else the sub-agent most likely won't connect to your
+ * master agent (I wasted a day on trying to figure that out :)
+ */
+# define WITH_SNMP
+
+// Are we running the SNMP portion as an agentx or as a master agent?
+# define SNMP_AS_AGENTX
+# define SNMP_AGENT_NAME		"statserv"
+//# define SNMP_MASTER_AGENT_PORT		161
+
 // Size of the malloc()/realloc() chunks for the socket input buffer
-# define BUFFER_CHUNK_SIZE	128
+# define BUFFER_CHUNK_SIZE		128
 
 // Debugging?
 # define DEBUG
 
 // Debugging the protocol? Protocol will be output via stderr
 //# define DEBUG_PROTOCOL
+
+// Allow the 'raw' command to work (should never be allowed in production!!)
+//# define ALLOW_RAW_COMMAND
 
 // Make sure we were configured properly
 #if (PING_TIME >= TIMEOUT)

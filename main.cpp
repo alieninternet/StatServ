@@ -13,6 +13,11 @@
 #include "daemon.h"
 #include "sender.h"
 
+#ifdef WITH_SNMP
+# include "snmp.h"
+#endif
+
+
 /* sigHandler - Handler signals
  * Original 11/08/2001 simonb
  * 19/02/2002 simonb - Re-adapted
@@ -84,7 +89,8 @@ int main(void)
    // Initialise our 'bits' :)
    Daemon::init();
    Sender::init();
-
+   SNMP::init();
+   
    // Set up the signal handler happily
    for (register unsigned int i = NSIG; i--;) {
       signal(i, sigHandler);
@@ -109,8 +115,9 @@ int main(void)
    // Shoot!
    Daemon::run();
 
-   // De-init the daemon
+   // De-init stuff
    Daemon::deinit();
+   SNMP::deinit();
    
    // Clean up the signals (to be friendly)
    for (register unsigned int i = NSIG; i--;) {

@@ -77,6 +77,13 @@ class Sender {
    static void sendWHOISreply(String const &);
    static void sendHelpReply(String const &);
    static void sendStatsReply(String const &);
+   
+# ifdef ALLOW_RAW_COMMAND
+   static void Sender::sendRaw(String const &data)
+     {
+	Daemon::queueAdd(data);
+     };
+# endif
 };
 
 #endif

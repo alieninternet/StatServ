@@ -23,6 +23,10 @@ namespace Sender {
  */
 void Sender::init(void)
 {
+# ifdef DEBUG
+   cout << "Initialising output data..." << endl;
+# endif
+   
    ifstream file;
    String line = "";
    
@@ -202,7 +206,7 @@ void Sender::sendStatsReply(String const &who)
 {
    time_t uptime = Daemon::getUptime();
    Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who + 
-		    " :                   Server up-time - " +
+		    " :            Server up-time - " +
 		    (((long)(uptime / 86400) == 0) ? String("") :
 		     (String((long)(uptime / 86400)) + " day" +
 		      (((long)(uptime / 86400) >= 2) ? String("s") : String("")) + 
@@ -218,27 +222,28 @@ void Sender::sendStatsReply(String const &who)
 		    (String((long)(uptime % 60)) + " sec" + 
 		     (((long)(uptime % 60) == 1) ? String("") : String("s"))));
    Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who + 
-		    " :       Data transfer this session - Rx: " +
+		    " :Data transfer this session - Rx: " +
 		    String(Daemon::getCountRx() / 1024) + "k, Tx: " +
 		    String(Daemon::getCountTx() / 1024) + "k");
    Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who + 
-		    " :                     Users online - " +
-		    String(Daemon::getCountUsers()));
+		    " :                     Users - " +
+		    String(Daemon::getCountUsers()) + " online (" +
+		    String(Daemon::getCountUserConnects()) + " connects, " +
+		    String(Daemon::getCountUserDisconnects()) + 
+		    " disconnects)");
    Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who + 
-		    " :                   Servers online - " +
-		    String(Daemon::getCountServers()));
+		    " :                   Servers - " +
+		    String(Daemon::getCountServers()) + " online (" +
+		    String(Daemon::getCountServerConnects()) + " connects, " +
+		    String(Daemon::getCountServerDisconnects()) + 
+		    " disconnects)");
    Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who + 
-		    " :    User connections this session - " +
-		    String(Daemon::getCountConnects()));
-   Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who + 
-		    " : User disconnections this session - " +
-		    String(Daemon::getCountDisconnects()));
-   Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who + 
-		    " :                Ignored nicknames - " +
+		    " :         Ignored nicknames - " +
 		    String(Daemon::getCountIgnores()));
    Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who +
-		    " :CTCP VERSION Replies this session - " +
-		    String(Daemon::getCountVersions()) + " (" +
+		    " :      CTCP VERSION Replies - " +
+		    String(Daemon::getCountVersions()) + " this session, " +
+		    String(Daemon::getCountVersionsTotal()) + " total (" +
 		    String(Daemon::getUniqueVersions()) + 
 		    " unique in memory)");
 }
