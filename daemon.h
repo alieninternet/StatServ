@@ -166,6 +166,51 @@ class Daemon {
      {
 	sentPing = false;
      };
+
+   static unsigned long getCountUsers(void)
+     {
+	return countUsers;
+     };
+   
+   static unsigned long getCountVersions(void)
+     {
+	return countVersions;
+     };
+
+   static unsigned long getCountConnects(void)
+     {
+	return countConnects;
+     };
+   
+   static unsigned long getCountDisconnects(void)
+     {
+	return countDisconnects;
+     };
+
+   static unsigned long getCountTx(void)
+     {
+	return countTx;
+     };
+   
+   static unsigned long getCountRx(void)
+     {
+	return countRx;
+     };
+
+   static int getCountIgnores(void)
+     {
+	return ignoreList.size();
+     };
+   
+   static int getUniqueVersions(void)
+     {
+	return versions.size();
+     };
+   
+   static time_t getUptime(void)
+     {
+	return currentTime - startTime;
+     };
    
    static void run(void);			// Main loop
 };

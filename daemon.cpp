@@ -122,18 +122,7 @@ void Daemon::init(void)
 void Daemon::checkpoint(void)
 {
 #ifdef DEBUG
-   String stats = String("[DEBUG] Checkpointing; Stats: ") + 
-     String(countUsers) + " online, " +
-     String(countConnects) + " connections, " +
-     String(countDisconnects) + " disconnections, " +
-     String(countVersions) + " CTCP VERSION replies (" +
-     String(versions.size()) + " unique); " +
-     String(ignoreList.size()) + " ignores, TX: " +
-     String(countTx / 1024) + "k, RX: " +
-     String(countRx / 1024) + "k; Up " +
-     String(currentTime - startTime) + " secs";
-   Sender::sendWALLOPS(stats);
-   cout << stats << endl;
+   cout << "Checkpoint" << endl;
 #endif
 
    ofstream file;
@@ -476,7 +465,7 @@ void Daemon::run(void)
 	     (currentTime >= (time_t)(disconnectTime + RECONNECT_DELAY))) {
 	    connect();
 	 }
-      } else if (!queueReady()) {
+      } else if (!queueReady() || !connected) {
 	 // We are stopping, and the output queue is empty: Break the loop
 	 break;
       }

@@ -12,6 +12,12 @@
 // Should we tell a client we got an unknown command, or be quiet?
 //# define ANNOYING_SILENT_TREATMENT
 
+// Should we have the 'stats' command?
+# define STATS_COMMAND
+
+// Passphrase for the 'stats' command (comment to turn off the passphrase)
+//# define STATS_PASSPHRASE	"man, gimme those stats"
+
 // Version identification
 # define VERSION	"VersionServ 0.0000000000000001a <=- get my point? :)"
 
@@ -49,8 +55,8 @@
 # define CONNECT_PASSWORD		"secretword"
 
 // Timing stuff (times are in seconds)
-# define PING_TIME			600
-# define TIMEOUT			60
+# define PING_TIME			300
+# define TIMEOUT			600
 # define RECONNECT_DELAY		30
 # define CHECKPOINT_TIME		300
 //# define CHECKPOINT_TIME		1800
@@ -67,6 +73,11 @@
 # define DEBUG
 
 // Debugging the protocol? Protocol will be output via stderr
-# define DEBUG_PROTOCOL
+//# define DEBUG_PROTOCOL
+
+// Make sure we were configured properly
+#if (PING_TIME >= TIMEOUT)
+# error "PING_TIME is greater than TIMEOUT"
+#endif
 
 #endif

@@ -133,7 +133,7 @@ void Sender::sendBurst(void)
    }
 # endif
    Daemon::queueAdd("END_OF_BURST");
-};
+}
 
 
 /* sendMOTDreply - Send out a reply to an MOTD request
@@ -155,7 +155,7 @@ void Sender::sendMOTDreply(String const &who)
    // Send the footer
    Daemon::queueAdd(String(":" MY_SERVERNAME " 376 ") + who +
 		    " :End of MOTD");
-};
+}
 
 
 /* sendHelpReply - Send out a reply to HELP
@@ -168,5 +168,49 @@ void Sender::sendHelpReply(String const &who)
 	it != helpData.end(); it++) {
       sendNOTICE(who, *it);
    }
-};
+}
 
+
+/* sendStatsReply - Send out a reply to a stats command request
+ * Original 19/02/2002 simonb
+ */
+void Sender::sendStatsReply(String const &who)
+{
+   time_t uptime = Daemon::getUptime();
+   Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who + 
+		    " :                   Server up-time - " +
+		    (((long)(uptime / 86400) == 0) ? String("") :
+		     (String((long)(uptime / 86400)) + " day" +
+		      (((long)(uptime / 86400) >= 2) ? String("s") : String("")) + 
+		      ", ")) +
+		    ((((long)(uptime % 86400) / 3600) == 0) ? String("") :
+		     (String((long)(uptime % 86400) / 3600) + " hour" + 
+		      ((((long)(uptime % 86400) / 3600) >= 2) ? String("s") : String("")) + 
+		      ", ")) +
+		    (((long)((uptime % 3600) / 60) == 0) ? String("") :
+		     (String((long)((uptime % 3600) / 60)) + " min" + 
+		      (((long)((uptime % 3600) / 60) >= 2) ? String("s") : String("")) + 
+		      ", ")) +
+		    (String((long)(uptime % 60)) + " sec" + 
+		     (((long)(uptime % 60) == 1) ? String("") : String("s"))));
+   Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who + 
+		    " :       Data transfer this session - Rx: " +
+		    String(Daemon::getCountRx() / 1024) + "k, Tx: " +
+		    String(Daemon::getCountTx() / 1024) + "k");
+   Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who + 
+		    " :                     Users online - " + 
+		    String(Daemon::getCountUsers()));
+   Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who + 
+		    " :    User connections this session - " +
+		    String(Daemon::getCountConnects()));
+   Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who + 
+		    " : User disconnections this session - " +
+		    String(Daemon::getCountDisconnects()));
+   Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who + 
+		    " :                Ignored nicknames - " +
+		    String(Daemon::getCountIgnores()));
+   Daemon::queueAdd(String(":" MY_USERNICK " NO ") + who +
+		    " :             CTCP VERSION Replies - " +
+		    String(Daemon::getCountVersions()) + " (" +
+		    String(Daemon::getUniqueVersions()) + " unique)");
+}

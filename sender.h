@@ -64,11 +64,6 @@ class Sender {
 	Daemon::queueAdd(String(":" MY_SERVERNAME " PONG ") + data);
      };
 
-   static void sendPRIVMSG(String const &who, String &data)
-     {
-	Daemon::queueAdd(String(":" MY_USERNICK " P ") + who + " :" + data);
-     };
-   
    static void sendSQUIT(String const &reason)
      {
 	Daemon::queueAdd(String(":" MY_SERVERNAME " SQUIT " MY_SERVERNAME 
@@ -81,12 +76,8 @@ class Sender {
 			 " :" VERSION);
      };
    
-   static void sendWALLOPS(String &data)
-     {
-	Daemon::queueAdd(String(":" MY_USERNICK " WALLOPS :") + data);
-     };
-   
    static void sendHelpReply(String const &);
+   static void sendStatsReply(String const &);
 };
 
 #endif

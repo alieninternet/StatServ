@@ -235,6 +235,18 @@ void PARSER_FUNC(Parser::parsePRIVMSG)
       Sender::sendNOTICE(origin, reply);
       return;
 #endif
+#ifdef STATS_COMMAND
+   } else if (command == "STATS") {
+# ifdef STATS_PASSPHRASE
+      // Check if the pass-phrase is valid
+      if (commandLine.rest() == STATS_PASSPHRASE) {
+# endif
+	 Sender::sendStatsReply(origin);
+	 return;
+# ifdef STATS_PASSPHRASE
+      }
+# endif
+#endif
    }
    
 #ifndef ANNOYING_SILENT_TREATMENT
